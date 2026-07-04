@@ -2384,7 +2384,8 @@ a.tt-lv:active{transform:translateY(-1px) scale(1.02)}
 
 /* ---- ascending staircase ---- */
 .levelmap{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);align-items:end;gap:14px;padding-top:36px}
-.lvl-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;text-align:center;background:none}
+.lvl-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:stretch;text-align:center;background:none}
+.lvl-col__bar{width:100%;align-self:stretch;box-sizing:border-box}
 .lvl-col__skill{font-family:var(--display);font-weight:700;font-size:12.5px;line-height:1.2;
   color:var(--ink);margin-bottom:10px;text-shadow:0 1px 0 rgba(255,255,255,.6)}
 .lvl-col__bar{height:calc(var(--h) * 1px);border-radius:18px;color:var(--txt,#fff);position:relative;cursor:pointer;
@@ -7869,10 +7870,17 @@ html.te-anim-paused *,html.te-anim-paused *::before,html.te-anim-paused *::after
       if(btn){btn.classList.toggle("is-on",on);btn.setAttribute("aria-pressed",on);}
     }
     apply();
+    function fsOn(){return !!(document.fullscreenElement||document.webkitFullscreenElement);}
+    function enterFS(){var el=document.documentElement,f=el.requestFullscreen||el.webkitRequestFullscreen;if(f){try{var r=f.call(el);if(r&&r.catch)r.catch(function(){});}catch(e){}}}
+    function exitFS(){if(!fsOn())return;var f=document.exitFullscreen||document.webkitExitFullscreen;if(f){try{var r=f.call(document);if(r&&r.catch)r.catch(function(){});}catch(e){}}}
+    function fsSync(){if(!fsOn()&&on){on=false;try{localStorage.setItem(LS,"normal");}catch(e){}apply();}}
+    document.addEventListener("fullscreenchange",fsSync);
+    document.addEventListener("webkitfullscreenchange",fsSync);
     if(btn)btn.addEventListener("click",function(){
       on=!on;
       try{localStorage.setItem(LS,on?"present":"normal");}catch(e){}
       apply();
+      if(on)enterFS(); else exitFS();
     });
   })();
 
